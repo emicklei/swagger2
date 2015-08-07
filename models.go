@@ -62,7 +62,8 @@ type PathItem struct {
 	Head Operation
 	// A definition of a PATCH operation on this path.
 	Patch Operation
-	// Extensions
+	// A list of parameters that are applicable for all the operations described under this path
+	Parameters []Parameter
 }
 
 type Operation struct {
@@ -74,4 +75,25 @@ type Operation struct {
 	Summary string
 	// A verbose explanation of the operation behavior. GFM syntax can be used for rich text representation.
 	Description string
+}
+
+type Parameter struct {
+	// The name of the parameter. Parameter names are case sensitive.
+	Name string
+	// The location of the parameter. Possible values are "query", "header", "path", "formData" or "body".
+	In string
+	// A brief description of the parameter.
+	Description string
+	// Determines whether this parameter is mandatory.
+	Required bool
+}
+
+type Schema struct {
+	Ref         string `json:"$ref,omitempty"`
+	Format      string
+	Title       string
+	Description string
+	Default     string
+	MultipleOf  string
+	Maximum     int
 }
