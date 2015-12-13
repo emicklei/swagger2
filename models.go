@@ -121,21 +121,91 @@ type Parameter struct {
 }
 
 type Schema struct {
-	Ref         string `json:"$ref,omitempty"`
-	Format      string
-	Title       string
-	Description string
-	Default     string
-	MultipleOf  string
-	Maximum     int
+	Ref              string        `json:"$ref,omitempty"`
+	Format           string        `json:"format,omitempty"`
+	Title            string        `json:"title,omitempty"`
+	Description      string        `json:"description,omitempty"`
+	Default          string        `json:"default,omitempty"`
+	MultipleOf       string        `json:"multipleOf,omitempty"`
+	Maximum          int           `json:"maximum,omitempty"`
+	ExclusiveMaximum bool          `json:"exclusiveMaximum"`
+	Minimum          number        `json:"minimum,omitempty"`
+	ExclusiveMinimum bool          `json:"exclusiveMinimum"`
+	MaxLength        int           `json:"maxLength"`
+	MinLength        int           `json:"minLength"`
+	Pattern          string        `json:"pattern,omitempty"`
+	MaxItems         int           `json:"maxItems"`
+	MinItems         int           `json:"minItems"`
+	UniqueItems      bool          `json:"uniqueItems"`
+	MaxProperties    int           `json:"maxProperties"`
+	MinProperties    int           `json:"minProperties"`
+	Required         bool          `json:"required"`
+	Enum             []interface{} `json:"enum,omitempty"`
+	Type             string        `json:"type,omitempty"`
+	// definitions were adjusted to the Swagger
+	Items                []interface{} `json:"items,omitempty"`
+	AllOf                []interface{} `json:"allOf,omitempty"`
+	Properties           []interface{} `json:"properties,omitempty"`
+	AdditionalProperties []interface{} `json:"additionalProperties,omitempty"`
+	//  further schema documentation
+	Discriminator string                      `json:"discriminator,omitempty"`
+	ReadOnly      bool                        `json:"readOnly"`
+	XML           XMLObject                   `json:"xml"`
+	ExternalDocs  ExternalDocumentationObject `json:"externalDocs"`
+	Example       interface{}                 `json:"example"`
 }
 
-type Item struct {
+type Items struct {
 	// The type of the parameter. Since the parameter is not located at the request body, it is limited to simple types (that is, not an object).
 	Type string `json:"type,omitempty"`
 	// See Data Type Formats for further details.
 	Format           string        `json:"format,omitempty"`
-	Items            []Item        `json:"items,omitempty"`
+	Items            []Items       `json:"items,omitempty"`
+	CollectionFormat string        `json:"collectionFormat,omitempty"`
+	Default          interface{}   `json:"default,omitempty"`
+	Maximum          number        `json:"maximum,omitempty"`
+	ExclusiveMaximum bool          `json:"exclusiveMaximum"`
+	Minimum          number        `json:"minimum,omitempty"`
+	ExclusiveMinimum bool          `json:"exclusiveMinimum"`
+	MaxLength        int           `json:"maxLength"`
+	MinLength        int           `json:"minLength"`
+	Pattern          string        `json:"pattern,omitempty"`
+	MaxItems         int           `json:"maxItems"`
+	MinItems         int           `json:"minItems"`
+	UniqueItems      bool          `json:"uniqueItems"`
+	Enum             []interface{} `json:"enum,omitempty"`
+	MultipleOf       number        `json:"multipleOf,omitempty"`
+	// Extensions
+	// TODO
+}
+
+type XMLObject struct {
+	Name      string `json:"name,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	Prefix    string `json:"prefix,omitempty"`
+	Attribute bool   `json:"attribute"`
+	Wrapped   bool   `json:"wrapped"`
+}
+
+type ExternalDocumentationObject struct {
+	Description string `json:"description"`
+	URL         string `json:"url"`
+}
+
+// ParameterObject describes a single operation parameter.
+// A unique parameter is defined by a combination of a name and location.
+type ParameterObject struct {
+	Name        string `json:"name,omitempty"`
+	In          string `json:"in,omitempty"`
+	Description string `json:"description,omitempty"`
+	Required    bool   `json:"required"`
+	// in is body
+	Schema *Schema `json:"schema,omitempty"`
+	// in is NOT body
+	Type             string        `json:"type,omitempty"`
+	Format           string        `json:"format,omitempty"`
+	AllowEmptyValue  string        `json:"allowEmptyValue,omitempty"`
+	Items            Items         `json:"items,omitempty"`
 	CollectionFormat string        `json:"collectionFormat,omitempty"`
 	Default          interface{}   `json:"default,omitempty"`
 	Maximum          number        `json:"maximum,omitempty"`
