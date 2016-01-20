@@ -148,11 +148,11 @@ type Schema struct {
 	Properties           []interface{} `json:"properties,omitempty"`
 	AdditionalProperties []interface{} `json:"additionalProperties,omitempty"`
 	//  further schema documentation
-	Discriminator string                      `json:"discriminator,omitempty"`
-	ReadOnly      bool                        `json:"readOnly"`
-	XML           XMLObject                   `json:"xml"`
-	ExternalDocs  ExternalDocumentationObject `json:"externalDocs"`
-	Example       interface{}                 `json:"example"`
+	Discriminator string                `json:"discriminator,omitempty"`
+	ReadOnly      bool                  `json:"readOnly"`
+	XML           XMLObject             `json:"xml"`
+	ExternalDocs  ExternalDocumentation `json:"externalDocs"`
+	Example       interface{}           `json:"example"`
 }
 
 type Items struct {
@@ -187,28 +187,33 @@ type XMLObject struct {
 	Wrapped   bool   `json:"wrapped"`
 }
 
-type ExternalDocumentationObject struct {
+type ExternalDocumentation struct {
 	Description string `json:"description"`
 	URL         string `json:"url"`
 }
 
-// ParameterObject describes a single operation parameter.
-// A unique parameter is defined by a combination of a name and location.
-type ParameterObject struct {
-	Name        string `json:"name,omitempty"`
-	In          string `json:"in,omitempty"`
-	Description string `json:"description,omitempty"`
-	Required    bool   `json:"required"`
-	// in is body
-	Schema *Schema `json:"schema,omitempty"`
-	// in is NOT body
+// Responses is an object to hold responses to be reused across operations.
+type Responses struct {
+	Default Response `json:"default"`
+	// A single response definition, mapping a "name" to the response it defines.
+	ResponsesMap map[string]Response
+}
+
+type Response struct {
+	Description string                 `json:"description"`
+	Schema      Schema                 `json:"schema"`
+	Headers     map[string]Header      `json:"headers"`
+	Examples    map[string]interface{} `json:"example"`
+}
+
+type Header struct {
+	Description      string        `json:"description,omitempty"`
 	Type             string        `json:"type,omitempty"`
 	Format           string        `json:"format,omitempty"`
-	AllowEmptyValue  string        `json:"allowEmptyValue,omitempty"`
-	Items            Items         `json:"items,omitempty"`
+	Items            []interface{} `json:"items,omitempty"`
 	CollectionFormat string        `json:"collectionFormat,omitempty"`
-	Default          interface{}   `json:"default,omitempty"`
-	Maximum          number        `json:"maximum,omitempty"`
+	Default          string        `json:"default,omitempty"`
+	Maximum          int           `json:"maximum,omitempty"`
 	ExclusiveMaximum bool          `json:"exclusiveMaximum"`
 	Minimum          number        `json:"minimum,omitempty"`
 	ExclusiveMinimum bool          `json:"exclusiveMinimum"`
@@ -219,7 +224,41 @@ type ParameterObject struct {
 	MinItems         int           `json:"minItems"`
 	UniqueItems      bool          `json:"uniqueItems"`
 	Enum             []interface{} `json:"enum,omitempty"`
-	MultipleOf       number        `json:"multipleOf,omitempty"`
-	// Extensions
-	// TODO
+	MultipleOf       string        `json:"multipleOf,omitempty"`
+}
+
+type Tag struct {
+	Name         string                `json:"name,omitempty"`
+	Description  string                `json:"description,omitempty"`
+	ExternalDocs ExternalDocumentation `json:"externalDocs"`
+}
+
+type Reference struct {
+	Ref string `json:"$ref"`
+}
+
+// SecurityDefinition is a declaration of the security schemes available to be used in the specification.
+type SecurityDefinition struct {
+	// A single security scheme definition, mapping a "name" to the scheme it defines.
+	Schemes map[string]Scheme
+}
+
+// SecurityScheme allows the definition of a security scheme that can be used by the operations.
+type SecurityScheme struct {
+	//  The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
+	Type string `json:"type,omitempty"`
+	// A short description for security scheme.
+	Description string `json:"description,omitempty"`
+	// The name of the header or query parameter to be used.
+	Name string `json:"name,omitempty"`
+	// The location of the API key. Valid values are "query" or "header".
+	In string `json:"in,omitempty"`
+	// The flow used by the OAuth2 security scheme. Valid values are "implicit", "password", "application" or "accessCode".
+	Flow string `json:"flow,omitempty"`
+	// The authorization URL to be used for this flow. This SHOULD be in the form of a URL.
+	AuthorizationUrl string `json:"authorizationUrl,omitempty"`
+	// The token URL to be used for this flow. This SHOULD be in the form of a URL.
+	TokenUrl string `json:"tokenUrl,omitempty"`
+	// Maps between a name of a scope to a short description of it (as the value of the property).
+	Scopes map[string]string `json:"scopes,omitempty"`
 }
