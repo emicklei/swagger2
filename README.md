@@ -5,4 +5,4 @@ Go implementation of the Swagger 2.0 specification (https://github.com/swagger-a
 
 This will include a ModelBuilder implementation such as the one in github.com/emicklei/go-restful/swagger
 
-(c) 2015, http://ernestmicklei.com. MIT License
+(c) 2015-2016, http://ernestmicklei.com. MIT License
