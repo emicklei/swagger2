@@ -2,4 +2,4 @@ language: go
 go:
  - 1.6
 install: go build -v .
-script: go test .
+script: go test ./...

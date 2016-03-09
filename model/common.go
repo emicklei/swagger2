@@ -14,7 +14,7 @@ type Info struct {
 	// The contact information for the exposed API.
 	Contact Contact `json:"contact"`
 	// The license information for the exposed API.
-	License License `json:"licence"`
+	License License `json:"license"`
 	// Required Provides the version of the application API (not to be confused with the specification version).
 	Version string `json:"version,omitempty"`
 }
