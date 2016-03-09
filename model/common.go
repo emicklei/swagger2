@@ -6,60 +6,36 @@ type Object struct {
 
 type Info struct {
 	// Required. The title of the application.
-	Title string
+	Title string `json:"title,omitempty"`
 	// A short description of the application. GFM syntax can be used for rich text representation.
-	Description string
+	Description string `json:"description,omitempty"`
 	// The Terms of Service for the API.
-	TermsOfService string
+	TermsOfService string `json:"termsOfService,omitempty"`
 	// The contact information for the exposed API.
-	Contact Contact
+	Contact Contact `json:"contact"`
 	// The license information for the exposed API.
-	License License
+	License License `json:"licence"`
 	// Required Provides the version of the application API (not to be confused with the specification version).
-	Version string
+	Version string `json:"version,omitempty"`
 }
 
 type Contact struct {
 	// The identifying name of the contact person/organization.
-	Name string
+	Name string `json:"name,omitempty"`
 	// The URL pointing to the contact information. MUST be in the format of a URL.
-	URL string
+	URL string `json:"url,omitempty"`
 	// The email address of the contact person/organization. MUST be in the format of an email address.
-	Email string
+	Email string `json:"email,omitempty"`
 }
 
 type License struct {
 	// Required. The license name used for the API.
-	Name string
+	Name string `json:"name,omitempty"`
 	// A URL to the license used for the API. MUST be in the format of a URL.
-	URL string
+	URL string `json:"url,omitempty"`
 }
 
 type number interface{}
-
-type Items struct {
-	// The type of the parameter. Since the parameter is not located at the request body, it is limited to simple types (that is, not an object).
-	Type string `json:"type,omitempty"`
-	// See Data Type Formats for further details.
-	Format           string        `json:"format,omitempty"`
-	Items            []Items       `json:"items,omitempty"`
-	CollectionFormat string        `json:"collectionFormat,omitempty"`
-	Default          interface{}   `json:"default,omitempty"`
-	Maximum          number        `json:"maximum,omitempty"`
-	ExclusiveMaximum bool          `json:"exclusiveMaximum"`
-	Minimum          number        `json:"minimum,omitempty"`
-	ExclusiveMinimum bool          `json:"exclusiveMinimum"`
-	MaxLength        int           `json:"maxLength"`
-	MinLength        int           `json:"minLength"`
-	Pattern          string        `json:"pattern,omitempty"`
-	MaxItems         int           `json:"maxItems"`
-	MinItems         int           `json:"minItems"`
-	UniqueItems      bool          `json:"uniqueItems"`
-	Enum             []interface{} `json:"enum,omitempty"`
-	MultipleOf       number        `json:"multipleOf,omitempty"`
-	// Extensions
-	// TODO
-}
 
 type XMLObject struct {
 	Name      string `json:"name,omitempty"`
@@ -71,8 +47,8 @@ type XMLObject struct {
 
 // ExternalDocumentation allows referencing an external resource for extended documentation.
 type ExternalDocumentation struct {
-	Description string `json:"description"`
-	URL         string `json:"url"`
+	Description string `json:"description,omitempty"`
+	URL         string `json:"url,omitempty"`
 }
 
 // Tag allows adding meta data to a single tag

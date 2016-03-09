@@ -3,7 +3,7 @@ package model
 // SecurityDefinition is a declaration of the security schemes available to be used in the specification.
 type SecurityDefinition struct {
 	// A single security scheme definition, mapping a "name" to the scheme it defines.
-	Schemes map[string]SecurityScheme
+	Schemes SecuritySchemeMap
 }
 
 // SecurityScheme allows the definition of a security scheme that can be used by the operations.
@@ -24,9 +24,4 @@ type SecurityScheme struct {
 	TokenUrl string `json:"tokenUrl,omitempty"`
 	// Maps between a name of a scope to a short description of it (as the value of the property).
 	Scopes map[string]string `json:"scopes,omitempty"`
-}
-
-// SecurityDefinitionList encapsulates a list of SecurityDefinition (association)
-type SecurityDefinitionList struct {
-	List []SecurityDefinition
 }

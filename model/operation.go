@@ -4,19 +4,19 @@ package model
 type Operation struct {
 	// A list of tags for API documentation control.
 	// Tags can be used for logical grouping of operations by resources or any other qualifier.
-	Tags []string
+	Tags []string `json:"summary,tags"`
 	// A short summary of what the operation does.
 	// For maximum readability in the swagger-ui, this field SHOULD be less than 120 characters.
-	Summary string
+	Summary string `json:"summary,omitempty"`
 	// A verbose explanation of the operation behavior. GFM syntax can be used for rich text representation.
-	Description  string
-	ExternalDocs ExternalDocumentation
-	OperationId  string                 `json:"operationId"`
-	Consumes     []string               `json:"consumes"`
-	Produces     []string               `json:"produces"`
-	Parameters   []Parameter            `json:"parameters"`
-	Responses    []Responses            `json:"responses"`
-	Schemes      []string               `json:"schemes"`
-	Deprecated   bool                   `json:"deprecated"`
-	Security     SecurityDefinitionList `json:"security"`
+	Description  string                `json:"description,omitempty"`
+	ExternalDocs ExternalDocumentation `json:"externalDocs,omitempty"`
+	OperationId  string                `json:"operationId,omitempty"`
+	Consumes     []string              `json:"consumes,omitempty"`
+	Produces     []string              `json:"produces,omitempty"`
+	Parameters   []Parameter           `json:"parameters,omitempty"`
+	Responses    ResponseMap           `json:"responses,omitempty"`
+	Schemes      []string              `json:"schemes,omitempty"`
+	Deprecated   bool                  `json:"deprecated"`
+	Security     SecurityDefinitionMap `json:"security"`
 }
