@@ -7,30 +7,30 @@ type Schema struct {
 	Description      string        `json:"description,omitempty"`
 	Default          string        `json:"default,omitempty"`
 	MultipleOf       string        `json:"multipleOf,omitempty"`
-	Maximum          int           `json:"maximum,omitempty"`
-	ExclusiveMaximum bool          `json:"exclusiveMaximum"`
-	Minimum          number        `json:"minimum,omitempty"`
-	ExclusiveMinimum bool          `json:"exclusiveMinimum"`
-	MaxLength        int           `json:"maxLength"`
-	MinLength        int           `json:"minLength"`
+	Maximum          *int          `json:"maximum,omitempty"`
+	ExclusiveMaximum bool          `json:"exclusiveMaximum,omitempty"`
+	Minimum          *int          `json:"minimum,omitempty"`
+	ExclusiveMinimum *bool         `json:"exclusiveMinimum,omitempty"`
+	MaxLength        *int          `json:"maxLength,omitempty"`
+	MinLength        *int          `json:"minLength,omitempty"`
 	Pattern          string        `json:"pattern,omitempty"`
-	MaxItems         int           `json:"maxItems"`
-	MinItems         int           `json:"minItems"`
-	UniqueItems      bool          `json:"uniqueItems"`
-	MaxProperties    int           `json:"maxProperties"`
-	MinProperties    int           `json:"minProperties"`
-	Required         bool          `json:"required"`
+	MaxItems         *int          `json:"maxItems,omitempty"`
+	MinItems         *int          `json:"minItems,omitempty"`
+	UniqueItems      *bool         `json:"uniqueItems,omitempty"`
+	MaxProperties    *int          `json:"maxProperties,omitempty"`
+	MinProperties    *int          `json:"minProperties,omitempty"`
+	Required         *bool         `json:"required,omitempty"`
 	Enum             []interface{} `json:"enum,omitempty"`
 	Type             string        `json:"type,omitempty"`
 	// definitions were adjusted to the Swagger
-	Items                []interface{} `json:"items,omitempty"`
-	AllOf                []interface{} `json:"allOf,omitempty"`
-	Properties           []interface{} `json:"properties,omitempty"`
-	AdditionalProperties []interface{} `json:"additionalProperties,omitempty"`
+	Items                []Schema `json:"items,omitempty"`
+	AllOf                []Schema `json:"allOf,omitempty"`
+	Properties           []Schema `json:"properties,omitempty"`
+	AdditionalProperties []Schema `json:"additionalProperties,omitempty"`
 	//  further schema documentation
-	Discriminator string                `json:"discriminator,omitempty"`
-	ReadOnly      bool                  `json:"readOnly"`
-	XML           XMLObject             `json:"xml"`
-	ExternalDocs  ExternalDocumentation `json:"externalDocs"`
-	Example       interface{}           `json:"example"`
+	Discriminator string                 `json:"discriminator,omitempty"`
+	ReadOnly      *bool                  `json:"readOnly,omitempty"`
+	XML           *XMLObject             `json:"xml,omitempty"`
+	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty"`
+	Example       interface{}            `json:"example,omitempty"`
 }

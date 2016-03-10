@@ -41,8 +41,8 @@ type XMLObject struct {
 	Name      string `json:"name,omitempty"`
 	Namespace string `json:"namespace,omitempty"`
 	Prefix    string `json:"prefix,omitempty"`
-	Attribute bool   `json:"attribute"`
-	Wrapped   bool   `json:"wrapped"`
+	Attribute *bool  `json:"attribute,omitempty"`
+	Wrapped   *bool  `json:"wrapped,omitempty"`
 }
 
 // ExternalDocumentation allows referencing an external resource for extended documentation.
