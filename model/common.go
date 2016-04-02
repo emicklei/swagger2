@@ -1,7 +1,9 @@
 package model
 
-type Object struct {
+type Swagger struct {
 	Swagger string `json:"swagger"`
+	Info    Info   `json:"info"`
+	Host    string `json:"host"`
 }
 
 type Info struct {

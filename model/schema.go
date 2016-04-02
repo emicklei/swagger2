@@ -23,14 +23,20 @@ type Schema struct {
 	Enum             []interface{} `json:"enum,omitempty"`
 	Type             string        `json:"type,omitempty"`
 	// definitions were adjusted to the Swagger
-	Items                []Schema `json:"items,omitempty"`
-	AllOf                []Schema `json:"allOf,omitempty"`
-	Properties           []Schema `json:"properties,omitempty"`
-	AdditionalProperties []Schema `json:"additionalProperties,omitempty"`
+	Items                []Schema   `json:"items,omitempty"`
+	AllOf                []Schema   `json:"allOf,omitempty"`
+	Properties           []Schema   `json:"properties,omitempty"`
+	AdditionalProperties []Schema   `json:"additionalProperties,omitempty"`
+	PatternProperties    PatternMap `json:"patternProperties,omitempty"`
 	//  further schema documentation
 	Discriminator string                 `json:"discriminator,omitempty"`
 	ReadOnly      *bool                  `json:"readOnly,omitempty"`
 	XML           *XMLObject             `json:"xml,omitempty"`
 	ExternalDocs  *ExternalDocumentation `json:"externalDocs,omitempty"`
 	Example       interface{}            `json:"example,omitempty"`
+}
+
+func (s Schema) SetMaximum(m int) Schema {
+	s.Maximum = &m
+	return s
 }
