@@ -23,11 +23,11 @@ type Schema struct {
 	Enum             []interface{} `json:"enum,omitempty"`
 	Type             string        `json:"type,omitempty"`
 	// definitions were adjusted to the Swagger
-	Items                []Schema   `json:"items,omitempty"`
-	AllOf                []Schema   `json:"allOf,omitempty"`
-	Properties           []Schema   `json:"properties,omitempty"`
-	AdditionalProperties []Schema   `json:"additionalProperties,omitempty"`
-	PatternProperties    PatternMap `json:"patternProperties,omitempty"`
+	Items                []Schema `json:"items,omitempty"`
+	AllOf                []Schema `json:"allOf,omitempty"`
+	Properties           []Schema `json:"properties,omitempty"`
+	AdditionalProperties []Schema `json:"additionalProperties,omitempty"`
+	//PatternProperties    PatternMap `json:"patternProperties,omitempty"`
 	//  further schema documentation
 	Discriminator string                 `json:"discriminator,omitempty"`
 	ReadOnly      *bool                  `json:"readOnly,omitempty"`
