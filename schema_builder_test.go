@@ -2,11 +2,18 @@ package swagger2
 
 import (
 	"encoding/json"
+	"github.com/emicklei/swagger2/model"
 	"net"
+	"reflect"
 	"testing"
 )
 
 type fakeint int
+
+type Recursive struct {
+	Rec    *Recursive
+	RecInt int
+}
 
 type Annoted struct {
 	Name    string  `description:"name" modelDescription:"a test"`
@@ -15,6 +22,7 @@ type Annoted struct {
 	ID      string  `unique:"true"`
 	FakeInt fakeint `type:"integer"`
 	IP      net.IP  `type:"string"`
+	Rec     Recursive
 }
 
 func TestSchemaPrimitives(t *testing.T) {
@@ -37,7 +45,8 @@ func TestSchemaPrimitives(t *testing.T) {
 	} {
 		b := NewSchemaBuilder()
 		{
-			got := doc(b.Build(each.value))
+			schema, _ := b.Build(each.value)
+			got := doc(schema)
 			want := each.result
 			if got != want {
 				t.Errorf("got %v want %v", got, want)
@@ -46,7 +55,65 @@ func TestSchemaPrimitives(t *testing.T) {
 	}
 }
 
-func doc(v interface{}) string {
-	data, _ := json.Marshal(v)
+func TestAnnotedModel(t *testing.T) {
+	expectedSchemasJson := `{
+	  "Annoted": {
+	    "type": "object",
+	    "properties": {
+	      "FakeInt": {
+	        "type": "integer"
+	      },
+	      "ID": {
+	        "type": "string"
+	      },
+	      "IP": {
+	        "type": "array"
+	      },
+	      "Name": {
+	        "type": "string"
+	      },
+	      "Rec": {
+	        "$ref": "#/definitions/Recursive"
+	      },
+	      "Stati": {
+	        "type": "string"
+	      },
+	      "happy": {
+	        "type": "bool"
+	      }
+	    }
+	  },
+	  "Recursive": {
+	    "type": "object",
+	    "properties": {
+	      "Rec": {
+	        "$ref": "#/definitions/Recursive"
+	      },
+	      "RecInt": {
+	        "type": "integer"
+	      }
+	    }
+	  }
+	}
+	`
+
+	val := Annoted{}
+	b := NewSchemaBuilder()
+	ref, schemas := b.Build(val)
+	expectedRef := &model.Schema{}
+	expectedSchemas := map[string]*model.Schema{}
+	json.Unmarshal([]byte(`{"$ref":"#/definitions/Annoted"}`), expectedRef)
+	json.Unmarshal([]byte(expectedSchemasJson), &expectedSchemas)
+	if !reflect.DeepEqual(ref, expectedRef) {
+		t.Fail()
+	}
+	if !reflect.DeepEqual(schemas, expectedSchemas) {
+		t.Errorf("got %v want %v", schemas, expectedSchemas)
+		t.Fail()
+	}
+}
+
+func doc(schema interface{}) string {
+	data, _ := json.Marshal(schema)
 	return string(data)
 }
