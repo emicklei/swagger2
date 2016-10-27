@@ -51,7 +51,7 @@ func (s *SchemaBuilder) build(t reflect.Type) *model.Schema {
 	}
 	switch kind {
 	case reflect.Slice:
-		//p.buildFromSlice(t)
+		s.buildFromSlice(t)
 	case reflect.Map:
 		//p.buildFromMap(t)
 	case reflect.Struct:
@@ -60,6 +60,16 @@ func (s *SchemaBuilder) build(t reflect.Type) *model.Schema {
 		s.build(t.Elem())
 	}
 	return s.schema
+}
+func (s *SchemaBuilder) buildFromSlice(t reflect.Type) {
+	itemType := t.Elem()
+	itemSchema := NewSchemaBuilder().Schemas(s.schemas).build(itemType)
+	switch itemType.Kind() {
+	case reflect.Struct:
+		s.schema.Items = []*model.Schema{{Ref: ref(itemType)}}
+	default:
+		s.schema.Items = []*model.Schema{itemSchema}
+	}
 }
 
 func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
@@ -78,7 +88,7 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 		// find out the field name
 		field := t.Field(c)
 		fieldName := getFieldName(field)
-		if fieldName == ""  {
+		if fieldName == "" {
 			continue
 		}
 
@@ -86,12 +96,21 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 		for fieldType.Kind() == reflect.Ptr {
 			fieldType = fieldType.Elem()
 		}
+		// Consider type overrides
+		overrideType := getOverrideType(field)
+		if overrideType != "" {
+			s.schema.Properties[fieldName] = &model.Schema{Type: overrideType}
+			model.MapToGoValidator(s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType)
+			continue
+		}
+
 		// Create the schema definition of the field and pass in all discovered schemas
 		fieldSchema := NewSchemaBuilder().Schemas(s.schemas).build(fieldType)
-		if fieldType.Kind() == reflect.Struct {
+		switch fieldType.Kind() {
+		case reflect.Struct:
 			s.schema.Properties[fieldName] = &model.Schema{Ref: ref(fieldType)}
 			model.MapToGoValidator(s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType)
-		} else {
+		default:
 			model.MapToGoValidator(fieldSchema, field.Tag.Get("valid"), fieldType)
 			s.schema.Properties[fieldName] = fieldSchema
 		}
@@ -125,6 +144,10 @@ func getTypeFromMapping(k reflect.Kind) string {
 	}
 
 	return ""
+}
+
+func getOverrideType(t reflect.StructField) string {
+	return t.Tag.Get("type")
 }
 
 func getFieldName(field reflect.StructField) string {

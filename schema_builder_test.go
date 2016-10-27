@@ -16,14 +16,16 @@ type Recursive struct {
 }
 
 type Annoted struct {
-	Name    string  `description:"name" modelDescription:"a test"`
-	Happy   bool    `json:"happy"`
-	Stati   string  `enum:"off|on" default:"on" modelDescription:"more description" valid:"range(10|20)"`
-	ID      string  `unique:"true"`
-	FakeInt fakeint `type:"integer" valid:"required,range(3|4)"`
-	IP      net.IP  `type:"string"`
-	Rec     Recursive `valid:"required"`
-	IgnoreMe string `json:"-"`
+	Name        string  `description:"name" modelDescription:"a test"`
+	Happy       bool    `json:"happy"`
+	Stati       string  `enum:"off|on" default:"on" modelDescription:"more description" valid:"range(10|20)"`
+	ID          string  `unique:"true"`
+	FakeInt     fakeint `type:"integer" valid:"required,range(3|4)"`
+	IP          net.IP  `type:"string"`
+	StringArray []string
+	StructArray []Recursive
+	Rec         Recursive `valid:"required"`
+	IgnoreMe    string    `json:"-"`
 }
 
 func TestSchemaPrimitives(t *testing.T) {
@@ -71,7 +73,23 @@ func TestAnnotedModel(t *testing.T) {
 	        "type": "string"
 	      },
 	      "IP": {
-	        "type": "array"
+	        "type": "string"
+	      },
+	      "StringArray": {
+	        "type": "array",
+	        "items": [
+	          {
+	            "type": "string"
+	          }
+	        ]
+	      },
+	      "StructArray": {
+	        "type": "array",
+	        "items": [
+	          {
+	            "$ref": "#/definitions/Recursive"
+	          }
+	        ]
 	      },
 	      "Name": {
 	        "type": "string"
