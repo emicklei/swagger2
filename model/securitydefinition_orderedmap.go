@@ -9,7 +9,7 @@ import (
 
 // namedSecurityDefinition associates a name with a SecurityDefinition
 type namedSecurityDefinition struct {
-	Name   string
+	Name               string
 	SecurityDefinition SecurityDefinition
 }
 
@@ -56,7 +56,7 @@ func (l SecurityDefinitionMap) MarshalJSON() ([]byte, error) {
 		buf.WriteString("\"")
 		buf.WriteString(each.Name)
 		buf.WriteString("\": ")
-		data, err := json.MarshalIndent(each.SecurityDefinition,"","\t")
+		data, err := json.MarshalIndent(each.SecurityDefinition, "", "\t")
 		if err != nil {
 			return buf.Bytes(), err
 		}

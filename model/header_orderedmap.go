@@ -56,7 +56,7 @@ func (l HeaderMap) MarshalJSON() ([]byte, error) {
 		buf.WriteString("\"")
 		buf.WriteString(each.Name)
 		buf.WriteString("\": ")
-		data, err := json.MarshalIndent(each.Header,"","\t")
+		data, err := json.MarshalIndent(each.Header, "", "\t")
 		if err != nil {
 			return buf.Bytes(), err
 		}
