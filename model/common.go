@@ -4,6 +4,10 @@ type Swagger struct {
 	Swagger string `json:"swagger"`
 	Info    Info   `json:"info"`
 	Host    string `json:"host"`
+	BasePath string `json:"basePath,omitempty"`
+	Schemes []string `json:"schemes,omitempty"`
+	Paths   map[string]*PathItem `json:"paths"` // Ignoring extensions for now
+	Definitions map[string]*Schema `json:"definitions"`
 }
 
 type Info struct {
@@ -14,9 +18,9 @@ type Info struct {
 	// The Terms of Service for the API.
 	TermsOfService string `json:"termsOfService,omitempty"`
 	// The contact information for the exposed API.
-	Contact Contact `json:"contact"`
+	Contact *Contact `json:"contact,omitempty"`
 	// The license information for the exposed API.
-	License License `json:"license"`
+	License *License `json:"license,omitempty"`
 	// Required Provides the version of the application API (not to be confused with the specification version).
 	Version string `json:"version,omitempty"`
 }

@@ -66,9 +66,9 @@ func (s *SchemaBuilder) buildFromSlice(t reflect.Type) {
 	itemSchema := NewSchemaBuilder().Schemas(s.schemas).build(itemType)
 	switch itemType.Kind() {
 	case reflect.Struct:
-		s.schema.Items = []*model.Schema{{Ref: ref(itemType)}}
+		s.schema.Items = &model.Schema{Ref: ref(itemType)}
 	default:
-		s.schema.Items = []*model.Schema{itemSchema}
+		s.schema.Items = itemSchema
 	}
 }
 
@@ -119,7 +119,7 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 
 // github.com/mcuadros/go-jsonschema-generator
 var mapping = map[reflect.Kind]string{
-	reflect.Bool:    "bool",
+	reflect.Bool:    "boolean",
 	reflect.Int:     "integer",
 	reflect.Int8:    "integer",
 	reflect.Int16:   "integer",

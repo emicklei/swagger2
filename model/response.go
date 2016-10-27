@@ -2,10 +2,10 @@ package model
 
 type Response struct {
 	Description string                 `json:"description"`
-	Schema      Schema                 `json:"schema"`
-	Headers     HeaderMap              `json:"headers"`
-	Examples    map[string]interface{} `json:"example"`
-	Extensions  interface{}            // TODO
+	Schema      *Schema                 `json:"schema,omitempty"`
+	Headers     *HeaderMap              `json:"headers,omitempty"`
+	Examples    map[string]interface{} `json:"example,omitempty"`
+	//Extensions  interface{}            // TODO
 }
 
 func (m ResponseMap) Default(r Response) {

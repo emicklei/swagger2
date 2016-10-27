@@ -33,7 +33,7 @@ type Schema struct {
 	Enum             []interface{} `json:"enum,omitempty"`
 	Type             string        `json:"type,omitempty"`
 	// definitions were adjusted to the Swagger
-	Items                []*Schema          `json:"items,omitempty"`
+	Items                *Schema          `json:"items,omitempty"`
 	AllOf                []*Schema          `json:"allOf,omitempty"`
 	Properties           map[string]*Schema `json:"properties,omitempty"`
 	AdditionalProperties *Schema            `json:"additionalProperties,omitempty"`
