@@ -9,14 +9,14 @@ type Operation struct {
 	// For maximum readability in the swagger-ui, this field SHOULD be less than 120 characters.
 	Summary string `json:"summary,omitempty"`
 	// A verbose explanation of the operation behavior. GFM syntax can be used for rich text representation.
-	Description  string                `json:"description,omitempty"`
+	Description  string                 `json:"description,omitempty"`
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty"`
-	OperationId  string                `json:"operationId,omitempty"`
-	Consumes     []string              `json:"consumes,omitempty"`
-	Produces     []string              `json:"produces,omitempty"`
-	Parameters   []Parameter           `json:"parameters,omitempty"`
-	Responses    map[string]*Response  `json:"responses,omitempty"`
-	Schemes      []string              `json:"schemes,omitempty"`
-	Deprecated   bool                  `json:"deprecated"`
+	OperationId  string                 `json:"operationId,omitempty"`
+	Consumes     []string               `json:"consumes,omitempty"`
+	Produces     []string               `json:"produces,omitempty"`
+	Parameters   []Parameter            `json:"parameters,omitempty"`
+	Responses    map[string]*Response   `json:"responses,omitempty"`
+	Schemes      []string               `json:"schemes,omitempty"`
+	Deprecated   bool                   `json:"deprecated"`
 	Security     *SecurityDefinitionMap `json:"security,omitempty"`
 }

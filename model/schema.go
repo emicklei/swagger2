@@ -3,11 +3,11 @@ package model
 type ValidationFields interface {
 	SetMaximum(int)
 	SetMinimum(int)
-	SetRequired(bool)
 	SetMaxLength(int)
 	SetMinLength(int)
 	SetMaxItems(int)
 	SetMinItems(int)
+	AddRequired(string)
 }
 
 type Schema struct {
@@ -29,11 +29,11 @@ type Schema struct {
 	UniqueItems      *bool         `json:"uniqueItems,omitempty"`
 	MaxProperties    *int          `json:"maxProperties,omitempty"`
 	MinProperties    *int          `json:"minProperties,omitempty"`
-	Required         *bool         `json:"required,omitempty"`
+	Required         []string      `json:"required,omitempty"`
 	Enum             []interface{} `json:"enum,omitempty"`
 	Type             string        `json:"type,omitempty"`
 	// definitions were adjusted to the Swagger
-	Items                *Schema          `json:"items,omitempty"`
+	Items                *Schema            `json:"items,omitempty"`
 	AllOf                []*Schema          `json:"allOf,omitempty"`
 	Properties           map[string]*Schema `json:"properties,omitempty"`
 	AdditionalProperties *Schema            `json:"additionalProperties,omitempty"`
@@ -70,6 +70,6 @@ func (s *Schema) SetMinItems(m int) {
 	s.MinItems = &m
 }
 
-func (s *Schema) SetRequired(b bool) {
-	s.Required = &b
+func (s *Schema) AddRequired(property string) {
+	s.Required = append(s.Required, property)
 }

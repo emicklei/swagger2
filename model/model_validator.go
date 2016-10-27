@@ -8,31 +8,29 @@ import (
 	"strings"
 )
 
-type ValidatorMapper func(ValidationFields, string, reflect.Type)
+type ValidatorMapper func(structSchema ValidationFields, fieldSchema ValidationFields, validator string, t reflect.Type, fieldName string)
 
-func nopValidator(_ ValidationFields, _ string, _ reflect.Type) {
+func nopValidator(_ ValidationFields, _ ValidationFields, _ string, _ reflect.Type, _ string) {
 }
 
-func minMaxLengthValidator(item ValidationFields, validator string, t reflect.Type) {
+func minMaxLengthValidator(_ ValidationFields, fieldSchema ValidationFields, validator string, t reflect.Type, _ string) {
 	re := regexp.MustCompile(`length\(([0-9]+)\|([0-9]+)\)`)
 	groups := re.FindStringSubmatch(validator)
 	min, _ := strconv.Atoi(groups[1])
 	max, _ := strconv.Atoi(groups[2])
 	if t.Kind() == reflect.String {
-		item.SetMinLength(min)
-		item.SetMaxLength(max)
+		fieldSchema.SetMinLength(min)
+		fieldSchema.SetMaxLength(max)
 	}
 }
 
-func requiredValidator(item ValidationFields, validator string, t reflect.Type) {
+func requiredValidator(structSchema ValidationFields, _ ValidationFields, validator string, _ reflect.Type, fieldName string) {
 	if validator == "required" {
-		item.SetRequired(true)
-	} else {
-		item.SetRequired(false)
+		structSchema.AddRequired(fieldName)
 	}
 }
 
-func rangeValidator(item ValidationFields, validator string, t reflect.Type) {
+func rangeValidator(_ ValidationFields, fieldSchema ValidationFields, validator string, t reflect.Type, _ string) {
 	re := regexp.MustCompile(`range\(([0-9]+)\|([0-9]+)\)`)
 	groups := re.FindStringSubmatch(validator)
 	min, _ := strconv.Atoi(groups[1])
@@ -44,15 +42,15 @@ func rangeValidator(item ValidationFields, validator string, t reflect.Type) {
 
 	switch t.Kind() {
 	case reflect.String:
-		item.SetMinLength(min)
-		item.SetMaxLength(max)
+		fieldSchema.SetMinLength(min)
+		fieldSchema.SetMaxLength(max)
 	case reflect.Slice, reflect.Array:
-		item.SetMinItems(min)
-		item.SetMaxItems(max)
+		fieldSchema.SetMinItems(min)
+		fieldSchema.SetMaxItems(max)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		item.SetMinimum(min)
-		item.SetMaximum(max)
+		fieldSchema.SetMinimum(min)
+		fieldSchema.SetMaximum(max)
 	default:
 	}
 }
@@ -146,7 +144,7 @@ func tokenize(tagValue string) chan *Token {
 	return c
 }
 
-func MapToGoValidator(validationFields ValidationFields, valid string, reflectType reflect.Type) error {
+func MapToGoValidator(structSchema ValidationFields, fieldSchema ValidationFields, valid string, t reflect.Type, fieldName string) error {
 	c := tokenize(valid)
 
 	for token := range c {
@@ -155,12 +153,8 @@ func MapToGoValidator(validationFields ValidationFields, valid string, reflectTy
 		}
 		val, ok := validatorRegistry[strings.Split(token.value, "(")[0]]
 		if ok {
-			val(validationFields, token.value, reflectType)
+			val(structSchema, fieldSchema, token.value, t, fieldName)
 		}
 	}
 	return nil
-}
-
-func newBoolPtr(val bool) *bool {
-	return &val
 }

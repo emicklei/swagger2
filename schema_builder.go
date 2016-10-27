@@ -63,6 +63,10 @@ func (s *SchemaBuilder) build(t reflect.Type) *model.Schema {
 }
 func (s *SchemaBuilder) buildFromSlice(t reflect.Type) {
 	itemType := t.Elem()
+
+	if itemType.Kind() == reflect.Ptr {
+		itemType = itemType.Elem()
+	}
 	itemSchema := NewSchemaBuilder().Schemas(s.schemas).build(itemType)
 	switch itemType.Kind() {
 	case reflect.Struct:
@@ -100,7 +104,7 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 		overrideType := getOverrideType(field)
 		if overrideType != "" {
 			s.schema.Properties[fieldName] = &model.Schema{Type: overrideType}
-			model.MapToGoValidator(s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType)
+			model.MapToGoValidator(s.schema, s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType, fieldName)
 			continue
 		}
 
@@ -109,9 +113,9 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 		switch fieldType.Kind() {
 		case reflect.Struct:
 			s.schema.Properties[fieldName] = &model.Schema{Ref: ref(fieldType)}
-			model.MapToGoValidator(s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType)
+			model.MapToGoValidator(s.schema, s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType, fieldName)
 		default:
-			model.MapToGoValidator(fieldSchema, field.Tag.Get("valid"), fieldType)
+			model.MapToGoValidator(s.schema, fieldSchema, field.Tag.Get("valid"), fieldType, fieldName)
 			s.schema.Properties[fieldName] = fieldSchema
 		}
 	}

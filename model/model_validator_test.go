@@ -2,11 +2,13 @@ package model
 
 import (
 	"testing"
+	"reflect"
 )
 
 func TestMinMaxValidator(t *testing.T) {
 	item := Schema{}
-	minMaxLengthValidator(&item, "length(12|14)", nil)
+	str := ""
+	minMaxLengthValidator(nil, &item, "length(12|14)", reflect.TypeOf(str), "")
 	if *item.MinLength != 12 {
 		t.Fail()
 	}
@@ -34,7 +36,8 @@ func TestTokenizer(t *testing.T) {
 
 func TestMinMaxValidatorMapping(t *testing.T) {
 	prop := Schema{}
-	err := MapToGoValidator(&prop, "length(2|4)", nil)
+	str := ""
+	err := MapToGoValidator(nil, &prop, "length(2|4)", reflect.TypeOf(str), "")
 	if err != nil {
 		t.Fail()
 	}

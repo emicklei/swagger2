@@ -1,13 +1,13 @@
 package model
 
 type Swagger struct {
-	Swagger string `json:"swagger"`
-	Info    Info   `json:"info"`
-	Host    string `json:"host"`
-	BasePath string `json:"basePath,omitempty"`
-	Schemes []string `json:"schemes,omitempty"`
-	Paths   map[string]*PathItem `json:"paths"` // Ignoring extensions for now
-	Definitions map[string]*Schema `json:"definitions"`
+	Swagger     string               `json:"swagger"`
+	Info        Info                 `json:"info"`
+	Host        string               `json:"host"`
+	BasePath    string               `json:"basePath,omitempty"`
+	Schemes     []string             `json:"schemes,omitempty"`
+	Paths       map[string]*PathItem `json:"paths"` // Ignoring extensions for now
+	Definitions map[string]*Schema   `json:"definitions"`
 }
 
 type Info struct {

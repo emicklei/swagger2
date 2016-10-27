@@ -43,7 +43,7 @@ func TestSchemaPrimitives(t *testing.T) {
 		{int64(42), `{"type":"integer"}`},
 		{uint32(42), `{"type":"integer"}`},
 		{uint64(42), `{"type":"integer"}`},
-		{false, `{"type":"bool"}`},
+		{false, `{"type":"boolean"}`},
 		{nil, `null`},
 	} {
 		b := NewSchemaBuilder()
@@ -62,12 +62,15 @@ func TestAnnotedModel(t *testing.T) {
 	expectedSchemasJson := `{
 	  "Annoted": {
 	    "type": "object",
+	    "required": [
+	      "FakeInt",
+	      "Rec"
+	    ],
 	    "properties": {
 	      "FakeInt": {
 	        "type": "integer",
 	        "minimum": 3,
-	        "maximum": 4,
-	        "required": true
+	        "maximum": 4
 	      },
 	      "ID": {
 	        "type": "string"
@@ -77,26 +80,23 @@ func TestAnnotedModel(t *testing.T) {
 	      },
 	      "StringArray": {
 	        "type": "array",
-	        "items": [
+	        "items":
 	          {
 	            "type": "string"
 	          }
-	        ]
 	      },
 	      "StructArray": {
 	        "type": "array",
-	        "items": [
+	        "items":
 	          {
 	            "$ref": "#/definitions/Recursive"
 	          }
-	        ]
 	      },
 	      "Name": {
 	        "type": "string"
 	      },
 	      "Rec": {
-	        "$ref": "#/definitions/Recursive",
-	        "required": true
+	        "$ref": "#/definitions/Recursive"
 	      },
 	      "Stati": {
 	        "type": "string",
@@ -104,7 +104,7 @@ func TestAnnotedModel(t *testing.T) {
 	        "maxLength": 20
 	      },
 	      "happy": {
-	        "type": "bool"
+	        "type": "boolean"
 	      }
 	    }
 	  },

@@ -4,7 +4,7 @@ package model
 
 type Swagger_Builder struct{ n *Swagger }
 
-func NewSwagger() *Swagger_Builder                             {
+func NewSwagger() *Swagger_Builder {
 	builder := &Swagger_Builder{new(Swagger)}
 	builder.n.Paths = map[string]*PathItem{}
 	builder.n.Definitions = map[string]*Schema{}
@@ -27,7 +27,7 @@ func (b *Swagger_Builder) Definitions(definitions map[string]*Schema) *Swagger_B
 
 type Info_Builder struct{ n *Info }
 
-func NewInfo() Info_Builder                        {
+func NewInfo() Info_Builder {
 	builder := Info_Builder{new(Info)}
 	builder.n.Version = "1.0.0"
 	return builder

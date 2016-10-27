@@ -13,7 +13,7 @@ func Example() {
 	op.Produces = []string{"application/json"}
 	op.Consumes = []string{"application/json"}
 	op.Parameters = []model.Parameter{}
-	op.Responses = map[string]*model.Response{"200":&model.Response{Description:"test", Schema:ref}}
+	op.Responses = map[string]*model.Response{"200": &model.Response{Description: "test", Schema: ref}}
 	pathItem := model.PathItem{Get: &op}
 
 	swagger := model.NewSwagger()
