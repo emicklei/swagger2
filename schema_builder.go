@@ -53,7 +53,7 @@ func (s *SchemaBuilder) build(t reflect.Type) *model.Schema {
 	case reflect.Slice:
 		s.buildFromSlice(t)
 	case reflect.Map:
-		//p.buildFromMap(t)
+		s.buildFromMap(t)
 	case reflect.Struct:
 		s.buildFromStruct(t)
 	case reflect.Ptr:
@@ -61,6 +61,23 @@ func (s *SchemaBuilder) build(t reflect.Type) *model.Schema {
 	}
 	return s.schema
 }
+
+
+func (s *SchemaBuilder) buildFromMap(t reflect.Type) {
+	itemType := t.Elem()
+
+	if itemType.Kind() == reflect.Ptr {
+		itemType = itemType.Elem()
+	}
+	itemSchema := NewSchemaBuilder().Schemas(s.schemas).build(itemType)
+	switch itemType.Kind() {
+	case reflect.Struct:
+		s.schema.AdditionalProperties = &model.Schema{Ref: ref(itemType)}
+	default:
+		s.schema.AdditionalProperties = itemSchema
+	}
+}
+
 func (s *SchemaBuilder) buildFromSlice(t reflect.Type) {
 	itemType := t.Elem()
 

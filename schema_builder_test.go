@@ -26,6 +26,8 @@ type Annoted struct {
 	StructArray []Recursive
 	Rec         Recursive `valid:"required"`
 	IgnoreMe    string    `json:"-"`
+	StringMap   map[string]string `json:"stringMap"`
+	StructMap   map[string]*Recursive `json:"structMap"`
 }
 
 func TestSchemaPrimitives(t *testing.T) {
@@ -74,6 +76,18 @@ func TestAnnotedModel(t *testing.T) {
 	      },
 	      "ID": {
 	        "type": "string"
+	      },
+	      "structMap": {
+	        "type": "object",
+	        "additionalProperties": {
+	            "$ref": "#/definitions/Recursive"
+	         }
+	      },
+	      "stringMap": {
+	        "type": "object",
+	        "additionalProperties": {
+	            "type": "string"
+	         }
 	      },
 	      "IP": {
 	        "type": "string"
