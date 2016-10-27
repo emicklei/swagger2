@@ -18,11 +18,12 @@ type Recursive struct {
 type Annoted struct {
 	Name    string  `description:"name" modelDescription:"a test"`
 	Happy   bool    `json:"happy"`
-	Stati   string  `enum:"off|on" default:"on" modelDescription:"more description"`
+	Stati   string  `enum:"off|on" default:"on" modelDescription:"more description" valid:"range(10|20)"`
 	ID      string  `unique:"true"`
-	FakeInt fakeint `type:"integer"`
+	FakeInt fakeint `type:"integer" valid:"required,range(3|4)"`
 	IP      net.IP  `type:"string"`
-	Rec     Recursive
+	Rec     Recursive `valid:"required"`
+	IgnoreMe string `json:"-"`
 }
 
 func TestSchemaPrimitives(t *testing.T) {
@@ -61,7 +62,10 @@ func TestAnnotedModel(t *testing.T) {
 	    "type": "object",
 	    "properties": {
 	      "FakeInt": {
-	        "type": "integer"
+	        "type": "integer",
+	        "minimum": 3,
+	        "maximum": 4,
+	        "required": true
 	      },
 	      "ID": {
 	        "type": "string"
@@ -73,10 +77,13 @@ func TestAnnotedModel(t *testing.T) {
 	        "type": "string"
 	      },
 	      "Rec": {
-	        "$ref": "#/definitions/Recursive"
+	        "$ref": "#/definitions/Recursive",
+	        "required": true
 	      },
 	      "Stati": {
-	        "type": "string"
+	        "type": "string",
+	        "minLength": 10,
+	        "maxLength": 20
 	      },
 	      "happy": {
 	        "type": "bool"
@@ -99,7 +106,9 @@ func TestAnnotedModel(t *testing.T) {
 
 	val := Annoted{}
 	b := NewSchemaBuilder()
+
 	ref, schemas := b.Build(val)
+
 	expectedRef := &model.Schema{}
 	expectedSchemas := map[string]*model.Schema{}
 	json.Unmarshal([]byte(`{"$ref":"#/definitions/Annoted"}`), expectedRef)
@@ -108,7 +117,7 @@ func TestAnnotedModel(t *testing.T) {
 		t.Fail()
 	}
 	if !reflect.DeepEqual(schemas, expectedSchemas) {
-		t.Errorf("got %v want %v", schemas, expectedSchemas)
+		t.Errorf("got %v want %v", doc(schemas), doc(expectedSchemas))
 		t.Fail()
 	}
 }

@@ -78,7 +78,7 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 		// find out the field name
 		field := t.Field(c)
 		fieldName := getFieldName(field)
-		if fieldName == "" {
+		if fieldName == ""  {
 			continue
 		}
 
@@ -90,7 +90,9 @@ func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
 		fieldSchema := NewSchemaBuilder().Schemas(s.schemas).build(fieldType)
 		if fieldType.Kind() == reflect.Struct {
 			s.schema.Properties[fieldName] = &model.Schema{Ref: ref(fieldType)}
+			model.MapToGoValidator(s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType)
 		} else {
+			model.MapToGoValidator(fieldSchema, field.Tag.Get("valid"), fieldType)
 			s.schema.Properties[fieldName] = fieldSchema
 		}
 	}
