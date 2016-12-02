@@ -18,7 +18,7 @@ type Parameter struct {
 	// See Data Type Formats for further details.
 	Format string `json:"format,omitempty"`
 	// Sets the ability to pass empty-valued parameters.
-	AllowEmptyValue bool
+	AllowEmptyValue bool `json:"allowEmptyValue"`
 	// Required if type is "array". Describes the type of items in the array.
 	//Items []Item
 	// Determines the format of the array if type array is used.
