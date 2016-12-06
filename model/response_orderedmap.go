@@ -9,7 +9,7 @@ import (
 
 // namedResponse associates a name with a Response
 type namedResponse struct {
-	Name   string
+	Name     string
 	Response Response
 }
 
@@ -56,7 +56,7 @@ func (l ResponseMap) MarshalJSON() ([]byte, error) {
 		buf.WriteString("\"")
 		buf.WriteString(each.Name)
 		buf.WriteString("\": ")
-		data, err := json.MarshalIndent(each.Response,"","\t")
+		data, err := json.MarshalIndent(each.Response, "", "\t")
 		if err != nil {
 			return buf.Bytes(), err
 		}

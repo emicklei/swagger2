@@ -9,7 +9,7 @@ import (
 
 // namedSecurityScheme associates a name with a SecurityScheme
 type namedSecurityScheme struct {
-	Name   string
+	Name           string
 	SecurityScheme SecurityScheme
 }
 
@@ -56,7 +56,7 @@ func (l SecuritySchemeMap) MarshalJSON() ([]byte, error) {
 		buf.WriteString("\"")
 		buf.WriteString(each.Name)
 		buf.WriteString("\": ")
-		data, err := json.MarshalIndent(each.SecurityScheme,"","\t")
+		data, err := json.MarshalIndent(each.SecurityScheme, "", "\t")
 		if err != nil {
 			return buf.Bytes(), err
 		}

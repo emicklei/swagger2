@@ -10,7 +10,7 @@ type Parameter struct {
 	// Determines whether this parameter is mandatory.
 	Required bool `json:"required"`
 	// If in is body
-	Schema Schema `json:"schema"`
+	Schema *Schema `json:"schema"`
 
 	// If not in body uses fields below
 	// The type of the parameter. Since the parameter is not located at the request body, it is limited to simple types (that is, not an object).

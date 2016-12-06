@@ -28,8 +28,9 @@ func TestOperation(t *testing.T) {
 	i := Response{
 		Description: "Invalid input",
 	}
-	m.Responses.Default(d)
-	m.Responses.Put("400", i)
+	m.Responses = map[string]*Response{}
+	m.Responses["Default"] = &d
+	m.Responses["400"] = &i
 
 	data, err := json.MarshalIndent(m, "", "\t")
 	if err != nil {

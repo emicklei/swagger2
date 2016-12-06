@@ -3,7 +3,9 @@ package swagger2
 import (
 	"reflect"
 
+	"fmt"
 	"github.com/emicklei/swagger2/model"
+	"strings"
 )
 
 type SchemaBuilder struct {
@@ -11,23 +13,37 @@ type SchemaBuilder struct {
 	schema  *model.Schema
 }
 
-func NewSchemaBuilder() SchemaBuilder {
-	return SchemaBuilder{
+func NewSchemaBuilder() *SchemaBuilder {
+	return &SchemaBuilder{
 		schemas: map[string]*model.Schema{},
 		schema:  new(model.Schema),
 	}
 }
 
-func (s *SchemaBuilder) Build(value interface{}) *model.Schema {
+func (s *SchemaBuilder) Build(value interface{}) (*model.Schema, map[string]*model.Schema) {
 	if value == nil {
-		return nil
+		return nil, nil
 	}
 	rv := reflect.ValueOf(value)
 	s.build(rv.Type())
-	return s.schema
+	// In case we have a struct here, make sure we return a reference
+	if rv.Type().Kind() == reflect.Struct {
+		return &model.Schema{Ref: ref(rv.Type())}, s.schemas
+	} else {
+		return s.schema, s.schemas
+	}
+
 }
 
-func (s *SchemaBuilder) build(t reflect.Type) {
+func (s *SchemaBuilder) Schemas(value map[string]*model.Schema) *SchemaBuilder {
+	if value == nil {
+		return nil
+	}
+	s.schemas = value
+	return s
+}
+
+func (s *SchemaBuilder) build(t reflect.Type) *model.Schema {
 	kind := t.Kind()
 
 	if jsType := getTypeFromMapping(kind); jsType != "" {
@@ -35,19 +51,96 @@ func (s *SchemaBuilder) build(t reflect.Type) {
 	}
 	switch kind {
 	case reflect.Slice:
-		//p.buildFromSlice(t)
+		s.buildFromSlice(t)
 	case reflect.Map:
-		//p.buildFromMap(t)
+		s.buildFromMap(t)
 	case reflect.Struct:
-		//p.buildFromStruct(t)
+		s.buildFromStruct(t)
 	case reflect.Ptr:
-		//p.build(t.Elem())
+		s.build(t.Elem())
+	}
+	return s.schema
+}
+
+
+func (s *SchemaBuilder) buildFromMap(t reflect.Type) {
+	itemType := t.Elem()
+
+	if itemType.Kind() == reflect.Ptr {
+		itemType = itemType.Elem()
+	}
+	itemSchema := NewSchemaBuilder().Schemas(s.schemas).build(itemType)
+	switch itemType.Kind() {
+	case reflect.Struct:
+		s.schema.AdditionalProperties = &model.Schema{Ref: ref(itemType)}
+	default:
+		s.schema.AdditionalProperties = itemSchema
+	}
+}
+
+func (s *SchemaBuilder) buildFromSlice(t reflect.Type) {
+	itemType := t.Elem()
+
+	if itemType.Kind() == reflect.Ptr {
+		itemType = itemType.Elem()
+	}
+	itemSchema := NewSchemaBuilder().Schemas(s.schemas).build(itemType)
+	switch itemType.Kind() {
+	case reflect.Struct:
+		s.schema.Items = &model.Schema{Ref: ref(itemType)}
+	default:
+		s.schema.Items = itemSchema
+	}
+}
+
+func (s *SchemaBuilder) buildFromStruct(t reflect.Type) {
+	fc := t.NumField()
+
+	// If we already know the struct, we just ned a reference
+	if _, ok := s.schemas[t.Name()]; ok {
+		s.schema = &model.Schema{Ref: ref(t)}
+		return
+	}
+
+	s.schemas[t.Name()] = s.schema
+	s.schema.Properties = map[string]*model.Schema{}
+
+	for c := 0; c < fc; c++ {
+		// find out the field name
+		field := t.Field(c)
+		fieldName := getFieldName(field)
+		if fieldName == "" {
+			continue
+		}
+
+		fieldType := field.Type
+		for fieldType.Kind() == reflect.Ptr {
+			fieldType = fieldType.Elem()
+		}
+		// Consider type overrides
+		overrideType := getOverrideType(field)
+		if overrideType != "" {
+			s.schema.Properties[fieldName] = &model.Schema{Type: overrideType}
+			model.MapToGoValidator(s.schema, s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType, fieldName)
+			continue
+		}
+
+		// Create the schema definition of the field and pass in all discovered schemas
+		fieldSchema := NewSchemaBuilder().Schemas(s.schemas).build(fieldType)
+		switch fieldType.Kind() {
+		case reflect.Struct:
+			s.schema.Properties[fieldName] = &model.Schema{Ref: ref(fieldType)}
+			model.MapToGoValidator(s.schema, s.schema.Properties[fieldName], field.Tag.Get("valid"), fieldType, fieldName)
+		default:
+			model.MapToGoValidator(s.schema, fieldSchema, field.Tag.Get("valid"), fieldType, fieldName)
+			s.schema.Properties[fieldName] = fieldSchema
+		}
 	}
 }
 
 // github.com/mcuadros/go-jsonschema-generator
 var mapping = map[reflect.Kind]string{
-	reflect.Bool:    "bool",
+	reflect.Bool:    "boolean",
 	reflect.Int:     "integer",
 	reflect.Int8:    "integer",
 	reflect.Int16:   "integer",
@@ -72,4 +165,33 @@ func getTypeFromMapping(k reflect.Kind) string {
 	}
 
 	return ""
+}
+
+func getOverrideType(t reflect.StructField) string {
+	return t.Tag.Get("type")
+}
+
+func getFieldName(field reflect.StructField) string {
+	if field.Anonymous {
+		return ""
+	}
+	jsonTags := field.Tag.Get("json")
+	if "-" == jsonTags {
+		return ""
+	}
+
+	fieldName := ""
+	if !strings.HasPrefix(jsonTags, ",") {
+		fieldName = jsonTags
+	} else {
+		fieldName = strings.Split(jsonTags, ",")[0]
+	}
+	if fieldName == "" {
+		fieldName = field.Name
+	}
+	return fieldName
+}
+
+func ref(t reflect.Type) string {
+	return fmt.Sprintf("#/definitions/%s", t.Name())
 }
