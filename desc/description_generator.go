@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"go/ast"
@@ -85,7 +86,7 @@ func Parse(f *ast.File) chan string {
 			c <- fmt.Sprintf("func (%s) SwaggerDoc() map[string]string {", typeSpec.Name)
 			c <- "\treturn map[string]string{"
 
-			structDoc := strings.TrimSpace(gendecl.Doc.Text())
+			structDoc := filterDoc(gendecl.Doc.Text())
 			if len(structDoc) > 0 {
 				c <- "\t\t" + "\"\": " + strconv.Quote(structDoc) + ","
 			}
@@ -106,7 +107,7 @@ func Parse(f *ast.File) chan string {
 					}
 				}
 
-				docText := strings.TrimSpace(field.Doc.Text())
+				docText := filterDoc(field.Doc.Text())
 				if len(docText) > 0 {
 					c <- "\t\t" + "\"" + fieldName + "\": " + strconv.Quote(docText) + ","
 				}
@@ -116,4 +117,21 @@ func Parse(f *ast.File) chan string {
 		}
 	}()
 	return c
+}
+
+func filterDoc(doc string) string {
+	buf := ""
+	scanner := bufio.NewScanner(strings.NewReader(doc))
+	for scanner.Scan() {
+		token := scanner.Text()
+		trimmed := strings.TrimSpace(token)
+		if strings.HasPrefix(trimmed, "TODO") {
+			continue
+		}
+		if strings.HasPrefix(trimmed, "---") {
+			break
+		}
+		buf = buf + scanner.Text() + "\n"
+	}
+	return strings.TrimSpace(buf)
 }
