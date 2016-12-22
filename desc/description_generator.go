@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func main() {
@@ -84,13 +85,14 @@ func Parse(f *ast.File) chan string {
 			}
 			c <- ""
 			c <- fmt.Sprintf("func (%s) SwaggerDoc() map[string]string {", typeSpec.Name)
-			c <- "\treturn map[string]string{"
 
-			structDoc := filterDoc(gendecl.Doc.Text())
-			if len(structDoc) > 0 {
-				c <- "\t\t" + "\"\": " + strconv.Quote(structDoc) + ","
+			type Field struct {
+				Field, Desc string
 			}
+			structDoc := filterDoc(gendecl.Doc.Text())
 
+			fields := []*Field{}
+			offsetLength := 0
 			for _, field := range structDecl.Fields.List {
 				if len(field.Names) == 0 {
 					continue
@@ -109,10 +111,28 @@ func Parse(f *ast.File) chan string {
 
 				docText := filterDoc(field.Doc.Text())
 				if len(docText) > 0 {
-					c <- "\t\t" + "\"" + fieldName + "\": " + strconv.Quote(docText) + ","
+					fields = append(fields, &Field{fieldName, strconv.Quote(docText)})
+					fieldLength := utf8.RuneCountInString(fieldName)
+					if fieldLength > offsetLength {
+						offsetLength = fieldLength
+					}
 				}
 			}
-			c <- "\t}"
+
+			if len(structDoc) != 0 || len(fields) != 0 {
+				c <- "\treturn map[string]string{"
+				if len(structDoc) > 0 {
+					c <- "\t\t" + "\"\": " + strings.Repeat(" ", offsetLength) + strconv.Quote(structDoc) + ","
+				}
+				if len(fields) > 0 {
+					for _, field := range fields {
+						c <- "\t\t" + "\"" + field.Field + "\": " + strings.Repeat(" ", offsetLength-len(field.Field)) + field.Desc + ","
+					}
+				}
+				c <- "\t}"
+			} else {
+				c <- "\treturn map[string]string{}"
+			}
 			c <- "}"
 		}
 	}()

@@ -44,37 +44,57 @@ type StructWithEmbeddedStruct struct {
 	Address
 }
 
+// This only has a struct documentation
+type StructWithStructDocOnly struct {
+	Person
+	Address
+}
+
+type StructWithFieldDocOnly struct {
+	//MiddleName doc
+	MiddleName string `json:"middleName"`
+}
+
 var expected = strings.TrimSpace(`
 package main
 
 func (Address) SwaggerDoc() map[string]string {
 	return map[string]string{
-		"": "Address doc",
-		"country": "Country doc",
+		"":         "Address doc",
+		"country":  "Country doc",
 		"postcode": "PostCode doc",
 	}
 }
 
 func (Person) SwaggerDoc() map[string]string {
 	return map[string]string{
-		"": "Person doc\nwith multiline",
-		"firstName": "FirstName doc",
-		"LastName": "LastName doc",
-		"middleName": "MiddleName doc",
+		"":               "Person doc\nwith multiline",
+		"firstName":      "FirstName doc",
+		"LastName":       "LastName doc",
+		"middleName":     "MiddleName doc",
 		"HeightInPounds": "Field without tag and\nmultiline comment and something to escape \\ \"",
 	}
 }
 
 func (UndocumentedStruct) SwaggerDoc() map[string]string {
-	return map[string]string{
-	}
+	return map[string]string{}
 }
 
 func (StructWithEmbeddedStruct) SwaggerDoc() map[string]string {
+	return map[string]string{}
+}
+
+func (StructWithStructDocOnly) SwaggerDoc() map[string]string {
 	return map[string]string{
+		"": "This only has a struct documentation",
 	}
 }
-`)
+
+func (StructWithFieldDocOnly) SwaggerDoc() map[string]string {
+	return map[string]string{
+		"middleName": "MiddleName doc",
+	}
+}`)
 
 func TestSwaggerDocGeneration(t *testing.T) {
 	fset := token.NewFileSet()
