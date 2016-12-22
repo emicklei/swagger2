@@ -146,7 +146,7 @@ func filterDoc(doc string) string {
 	for scanner.Scan() {
 		token := scanner.Text()
 		trimmed := strings.TrimSpace(token)
-		if strings.HasPrefix(trimmed, "TODO") {
+		if strings.HasPrefix(trimmed, "TODO") || strings.HasPrefix(trimmed, "FIXME") {
 			continue
 		}
 		if strings.HasPrefix(trimmed, "---") {

@@ -8,6 +8,7 @@ import (
 )
 
 //Address doc
+//FIXME whatever
 type Address struct {
 	//Country doc
 	// TODO should be filtered out
@@ -24,6 +25,7 @@ type Person struct {
 	//FirstName doc
 	FirstName string `json:"firstName,omitempty"`
 	//LastName doc
+	//FIXME whatever
 	LastName string `json:",omitempty"`
 	//MiddleName doc
 	MiddleName string `json:"middleName"`
